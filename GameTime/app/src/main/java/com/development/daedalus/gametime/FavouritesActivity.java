@@ -4,14 +4,40 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class FavouritesActivity extends ActionBarActivity {
+public class FavouritesActivity extends ActionBarActivity implements IpManager.UpdateDatabaseAsyncTaskCompleteListener{
+
+    List<Entity> entityList;
+    BaseAdapter entityListAdapter;
+    ListView entityListView;
+
+    EntitiesDbHelper entitiesDbHelper;
+    IpManager ipManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourites);
+
+        entityList = new ArrayList<>();
+        entityListView = (ListView) findViewById(R.id.entity_list_view);
+
+
+        entitiesDbHelper = new EntitiesDbHelper(this);
+        //entitiesDbHelper.ClearEntities();
+
+        ipManager = new IpManager(this,this);
+
+        ipManager.UpdateDatabase();
+
+
     }
 
 
@@ -35,5 +61,9 @@ public class FavouritesActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void UpdateDatabaseAsyncTaskComplete(){
+
     }
 }

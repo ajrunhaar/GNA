@@ -1,5 +1,6 @@
 package com.development.daedalus.gametime;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -49,7 +50,27 @@ public class EntitiesDbHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    public List<Entity> getAllEntities() {
+    public void ClearEntities() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_ENTITIES,null,null);
+        db.close();
+    }
+
+
+    public void InsertEntity(Entity entity){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, entity.GetName());
+        values.put(COLUMN_LOCATION, entity.GetLocation());
+        values.put(COLUMN_CODE, entity.GetCode());
+
+        db.insert(TABLE_ENTITIES,null,values);
+        db.close();
+
+    }
+
+    public List<Entity> GetAllEntities() {
         ArrayList entity_list = new ArrayList();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_ENTITIES;
@@ -65,6 +86,7 @@ public class EntitiesDbHelper extends SQLiteOpenHelper{
             entity_list.add(entity);
             cursor.moveToNext();
         }
+        db.close();
         return entity_list;
     }
 }
