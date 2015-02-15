@@ -38,6 +38,7 @@ public class IpManager {
     public final static int POST = 2;
 
     EntitiesDbHelper entities_db;
+    EventsDbHelper events_db;
 
     private UpdateDatabaseAsyncTaskCompleteListener listener;
 
@@ -47,14 +48,15 @@ public class IpManager {
         this.context = context;
         this.listener = listener;
         entities_db = new EntitiesDbHelper(context);
+        events_db = new EventsDbHelper(context);
     }
 
-    public void UpdateDatabase(){
-        UpdateDatabaseAsyncTask updateDatabaseAsyncTask  = new UpdateDatabaseAsyncTask();
-        updateDatabaseAsyncTask.execute();
+    public void UpdateEntitiesDatabase(){
+        UpdateEntitiesDatabaseAsyncTask updateEntitiesDatabaseAsyncTask  = new UpdateEntitiesDatabaseAsyncTask();
+        updateEntitiesDatabaseAsyncTask.execute();
     }
 
-    private class UpdateDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
+    private class UpdateEntitiesDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
 
 
 
@@ -73,34 +75,33 @@ public class IpManager {
 
             String json = MakeServiceCall("http://10.0.0.5/GameTime_Entities.php",GET, myNameValuePairList);
 
-            Log.d("Response: "," "+ json);
+            //Log.d("Response: "," "+ json);
 
-//            if (json != null) {
-//                try {
-//                    JSONObject jsonObj = new JSONObject(json);
-//                    if (jsonObj != null) {
-//                        JSONArray Entries = jsonObj.getJSONArray("result");
-//
-//                        for (int i = 0; i < Entries.length(); i++) {
-//                            JSONObject entryObj = (JSONObject) Entries.get(i);
-//                            Entity entity = new Entity();
-//                            entity.SetName(entryObj.getString("name"));
-//                            entity.SetCode(entryObj.getString("code"));
-//                            entity.SetLocation(entryObj.getString("location"));
-//
-//                            entities_db.InsertEntity(entity);
-//                            //Log.v("Debug", tmpHierarchyEntry.getTreeCode());
-//                            //Log.v("Debug", entryObj.getString("name"));
-//                        }
-//                    }
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                //
-//            } else {
-//                Log.e("JSON Data", "Didn't receive any data from server!");
-//            }
+            if (json != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(json);
+                    if (jsonObj != null) {
+                        JSONArray Entries = jsonObj.getJSONArray("result");
+
+                        for (int i = 0; i < Entries.length(); i++) {
+                            JSONObject entryObj = (JSONObject) Entries.get(i);
+                            Entity entity = new Entity();
+                            entity.SetName(entryObj.getString("name"));
+                            entity.SetCode(entryObj.getString("code"));
+                            entity.SetLocation(entryObj.getString("location"));
+
+                            entities_db.InsertEntity(entity);
+
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //
+            } else {
+                Log.e("JSON Data", "Didn't receive any data from server!");
+            }
 
             return null;
         }
@@ -109,8 +110,76 @@ public class IpManager {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-            Toast.makeText(context, "Successfully Updated", Toast.LENGTH_SHORT).show();
-            listener.UpdateDatabaseAsyncTaskComplete();
+
+            listener.UpdateEntitiesDatabaseAsyncTaskComplete();
+
+        }
+
+    }
+
+    public void UpdateEventsDatabase(){
+        UpdateEventsDatabaseAsyncTask updateEventsDatabaseAsyncTask  = new UpdateEventsDatabaseAsyncTask();
+        updateEventsDatabaseAsyncTask.execute();
+    }
+
+    private class UpdateEventsDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
+
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            List<NameValuePair> myNameValuePairList = new ArrayList<NameValuePair>();
+            myNameValuePairList.add(new BasicNameValuePair("username", "root"));
+            myNameValuePairList.add(new BasicNameValuePair("password", "password"));
+
+            String json = MakeServiceCall("http://10.0.0.5/GameTime_Events.php",GET, myNameValuePairList);
+
+            Log.d("Response: "," "+ json);
+
+            if (json != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(json);
+                    if (jsonObj != null) {
+                        JSONArray Entries = jsonObj.getJSONArray("result");
+
+                        for (int i = 0; i < Entries.length(); i++) {
+                            JSONObject entryObj = (JSONObject) Entries.get(i);
+                            Event event  = new Event();
+                            event.SetStartMillis(entryObj.getLong("startMillis"));
+                            event.SetEndMillis(entryObj.getLong("endMillis"));
+                            event.SetTeamXCode(entryObj.getString("teamXCode"));
+                            event.SetTeamYCode(entryObj.getString("teamYCode"));
+                            event.SetLocation(entryObj.getString("location"));
+                            Log.d("IpManager","X:" + event.GetTeamXCode() + " Y:" + event.GetTeamYCode());
+                            events_db.InsertEvent(event);
+
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //
+            } else {
+                Log.e("JSON Data", "Didn't receive any data from server!");
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+
+            listener.UpdateEventsDatabaseAsyncTaskComplete();
 
         }
 
@@ -119,7 +188,6 @@ public class IpManager {
     public String MakeServiceCall(String url, int method,List<NameValuePair> params) {
         try {
 
-            Log.d("AJR TEST", "Whoop Whoop");
             // http client
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpEntity httpEntity = null;
@@ -179,7 +247,8 @@ public class IpManager {
     }
 
     public interface UpdateDatabaseAsyncTaskCompleteListener{
-        void UpdateDatabaseAsyncTaskComplete();
+        void UpdateEventsDatabaseAsyncTaskComplete();
+        void UpdateEntitiesDatabaseAsyncTaskComplete();
     }
 }
 

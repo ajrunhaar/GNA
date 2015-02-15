@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 
     <ImageView
         android:layout_width="80dp"
@@ -16,8 +17,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name"
-        android:id="@+id/entity_name"
+        android:text="Opponent"
+        android:id="@+id/event_opponent"
         android:layout_alignTop="@+id/imageView"
         android:layout_toRightOf="@+id/imageView"
         android:layout_toEndOf="@+id/imageView"
@@ -28,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Location"
-        android:id="@+id/entity_location"
+        android:id="@+id/event_location"
         android:layout_above="@+id/event_start_date_time"
         android:layout_alignLeft="@+id/event_start_date_time"
         android:layout_alignStart="@+id/event_start_date_time" />
@@ -36,9 +37,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Code"
+        android:text="Date-Time"
         android:id="@+id/event_start_date_time"
         android:layout_alignBottom="@+id/imageView"
         android:layout_toRightOf="@+id/imageView"
         android:layout_toEndOf="@+id/imageView" />
+
 </RelativeLayout>

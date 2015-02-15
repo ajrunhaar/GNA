@@ -70,12 +70,11 @@ public class EntitiesDbHelper extends SQLiteOpenHelper{
 
     }
 
-    public List<Entity> GetAllEntities() {
+    public ArrayList<Entity> GetAllEntities() {
         ArrayList entity_list = new ArrayList();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_ENTITIES;
         Cursor cursor =  db.rawQuery(query,null);
-
         cursor.moveToFirst();
         while(cursor.isAfterLast() == false){
             Entity entity = new Entity();
@@ -86,7 +85,9 @@ public class EntitiesDbHelper extends SQLiteOpenHelper{
             entity_list.add(entity);
             cursor.moveToNext();
         }
-        db.close();
+
         return entity_list;
     }
+
+
 }

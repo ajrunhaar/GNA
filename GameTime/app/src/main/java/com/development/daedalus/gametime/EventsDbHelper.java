@@ -1,5 +1,6 @@
 package com.development.daedalus.gametime;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,7 +23,7 @@ public class EventsDbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TEAMYCODE= "teamYCode";
     public static final String COLUMN_LOCATION= "location";
 
-    private static final String DATABASE_NAME = "gametime.db";
+    private static final String DATABASE_NAME = "gametime2.db";
     private static final int DATABASE_VERSION = 1;
 
     // Database creation sql statement
@@ -53,7 +54,29 @@ public class EventsDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public List<Event> getAllEvents() {
+    public void ClearEvents() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_EVENTS,null,null);
+        db.close();
+    }
+
+
+    public void InsertEvent(Event event){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_START, event.GetStartMillis());
+        values.put(COLUMN_END, event.GetEndMillis());
+        values.put(COLUMN_TEAMXCODE, event.GetTeamXCode());
+        values.put(COLUMN_TEAMYCODE, event.GetTeamYCode());
+        values.put(COLUMN_LOCATION, event.GetLocation());
+        db.insert(TABLE_EVENTS,null,values);
+        db.close();
+
+    }
+
+
+    public ArrayList<Event> GetAllEvents() {
         ArrayList events_list = new ArrayList();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_EVENTS;
@@ -65,7 +88,28 @@ public class EventsDbHelper extends SQLiteOpenHelper {
             event.SetStartMillis(cursor.getLong(cursor.getColumnIndex(COLUMN_START)));
             event.SetEndMillis(cursor.getLong(cursor.getColumnIndex(COLUMN_END)));
             event.SetTeamXCode(cursor.getString(cursor.getColumnIndex(COLUMN_TEAMXCODE)));
-            event.SetTeamYCode(cursor.getString(cursor.getColumnIndex(COLUMN_TEAMXCODE)));
+            event.SetTeamYCode(cursor.getString(cursor.getColumnIndex(COLUMN_TEAMYCODE)));
+            event.SetLocation(cursor.getString(cursor.getColumnIndex(COLUMN_LOCATION)));
+            events_list.add(event);
+            cursor.moveToNext();
+        }
+        return events_list;
+    }
+
+    public ArrayList<Event> GetEventFromTeamCode(String TeamCode) {
+        ArrayList events_list = new ArrayList();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_EVENTS + " WHERE " + COLUMN_TEAMXCODE + " = " + "'" + TeamCode +"'" + " OR " + COLUMN_TEAMYCODE + " = " + "'" + TeamCode +"'";
+        Log.d("EventsDbHelper","Query: " + query);
+        Cursor cursor =  db.rawQuery(query,null);
+        Log.d("EventsDbHelper","cursor size " + cursor.getCount());
+        cursor.moveToFirst();
+        while(cursor.isAfterLast() == false){
+            Event event = new Event();
+            event.SetStartMillis(cursor.getLong(cursor.getColumnIndex(COLUMN_START)));
+            event.SetEndMillis(cursor.getLong(cursor.getColumnIndex(COLUMN_END)));
+            event.SetTeamXCode(cursor.getString(cursor.getColumnIndex(COLUMN_TEAMXCODE)));
+            event.SetTeamYCode(cursor.getString(cursor.getColumnIndex(COLUMN_TEAMYCODE)));
             event.SetLocation(cursor.getString(cursor.getColumnIndex(COLUMN_LOCATION)));
             events_list.add(event);
             cursor.moveToNext();

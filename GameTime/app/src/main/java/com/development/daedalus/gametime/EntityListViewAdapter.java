@@ -49,7 +49,7 @@ public class EntityListViewAdapter extends BaseAdapter {
 
         final TextView textViewEntityName = (TextView) v.findViewById(R.id.entity_name);
         final TextView textViewEntityLocation = (TextView) v.findViewById(R.id.entity_location);
-        final TextView textViewEntityCode = (TextView) v.findViewById(R.id.entity_code);
+        final TextView textViewEntityCode = (TextView) v.findViewById(R.id.event_start_date_time);
 
         textViewEntityName.setText(entityList.get(position).GetName());
         textViewEntityLocation.setText(entityList.get(position).GetLocation());

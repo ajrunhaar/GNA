@@ -1,12 +1,15 @@
 package com.development.daedalus.gametime;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,7 @@ public class FavouritesActivity extends ActionBarActivity implements IpManager.U
     ListView entityListView;
 
     EntitiesDbHelper entitiesDbHelper;
+    EventsDbHelper eventsDbHelper;
     IpManager ipManager;
 
     @Override
@@ -28,14 +32,34 @@ public class FavouritesActivity extends ActionBarActivity implements IpManager.U
 
         entityList = new ArrayList<>();
         entityListView = (ListView) findViewById(R.id.entity_list_view);
-
+        entityListAdapter = new EntityListViewAdapter(entityList,this);
+        entityListView.setAdapter(entityListAdapter);
 
         entitiesDbHelper = new EntitiesDbHelper(this);
-        //entitiesDbHelper.ClearEntities();
+        eventsDbHelper = new EventsDbHelper(this);
+
+        entitiesDbHelper.ClearEntities();
+        eventsDbHelper.ClearEvents();
 
         ipManager = new IpManager(this,this);
 
-        ipManager.UpdateDatabase();
+        ipManager.UpdateEventsDatabase();
+        ipManager.UpdateEntitiesDatabase();
+
+
+        entityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+//                Toast.makeText(getApplicationContext(),
+//                        "Click ListItem Number " + position, Toast.LENGTH_LONG)
+//                        .show();
+//
+                Intent intent = new Intent(getApplicationContext(),EventsActivity.class);
+                intent.putExtra("Entity",entityList.get(position).GetCode());
+                startActivity(intent);
+            }
+        });
 
 
     }
@@ -63,7 +87,17 @@ public class FavouritesActivity extends ActionBarActivity implements IpManager.U
         return super.onOptionsItemSelected(item);
     }
 
-    public void UpdateDatabaseAsyncTaskComplete(){
+    public void UpdateEntitiesDatabaseAsyncTaskComplete(){
+        //Toast.makeText(this, "Successfully Updated", Toast.LENGTH_SHORT).show();
+        List<Entity> tmpEntityList = entitiesDbHelper.GetAllEntities();
+        entityList.clear();
+        for(int i = 0;i<tmpEntityList.size();i++){
+            entityList.add(tmpEntityList.get(i));
+        }
+        entityListAdapter.notifyDataSetChanged();
+    }
 
+    public void UpdateEventsDatabaseAsyncTaskComplete(){
+        Toast.makeText(this, "Events Successfully Updated", Toast.LENGTH_SHORT).show();
     }
 }
