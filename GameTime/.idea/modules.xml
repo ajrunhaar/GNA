@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GameTime.iml" filepath="$PROJECT_DIR$/GameTime.iml" />
+      <module fileurl="file://$PROJECT_DIR$/andoid-time-square/andoid-time-square.iml" filepath="$PROJECT_DIR$/andoid-time-square/andoid-time-square.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
