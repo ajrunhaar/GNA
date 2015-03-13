@@ -30,10 +30,23 @@ public class FavouritesActivity extends ActionBarActivity implements IpManager.U
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourites);
 
+        /*
+         Create empty list with team entities.
+         Create and adapter that uses the list of entities.
+         Link list view to the adapter
+        */
         entityList = new ArrayList<>();
         entityListView = (ListView) findViewById(R.id.entity_list_view);
         entityListAdapter = new EntityListViewAdapter(entityList,this);
         entityListView.setAdapter(entityListAdapter);
+
+        /*
+        Get the age/version of all tables.
+        */
+
+        /*
+        For each table out of date, clear and reload.
+        */
 
         entitiesDbHelper = new EntitiesDbHelper(this);
         eventsDbHelper = new EventsDbHelper(this);
@@ -42,6 +55,8 @@ public class FavouritesActivity extends ActionBarActivity implements IpManager.U
         eventsDbHelper.ClearEvents();
 
         ipManager = new IpManager(this,this);
+
+
 
         ipManager.UpdateEventsDatabase();
         ipManager.UpdateEntitiesDatabase();
@@ -81,6 +96,11 @@ public class FavouritesActivity extends ActionBarActivity implements IpManager.U
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_calendar) {
+            Intent intent = new Intent(this,CalendarActivity.class);
+            startActivity(intent);
             return true;
         }
 

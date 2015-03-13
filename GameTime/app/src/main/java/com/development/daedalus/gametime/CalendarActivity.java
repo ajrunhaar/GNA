@@ -10,7 +10,9 @@ import android.widget.Button;
 
 import com.squareup.timessquare.CalendarPickerView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 
@@ -30,10 +32,18 @@ public class CalendarActivity extends Activity {
         final Calendar lastYear = Calendar.getInstance();
         lastYear.add(Calendar.YEAR, -1);
 
+        Collection<Date> mHighlightedDates = new ArrayList<Date>();
+        Calendar testCalendar = Calendar.getInstance();
+        testCalendar.set(2015,2,14);
+        Date testDate = new Date();
+        testDate.setTime(testCalendar.getTimeInMillis());
+        mHighlightedDates.add(testDate);
+
         calendar = (CalendarPickerView) findViewById(R.id.calendar_view);
         calendar.init(lastYear.getTime(), nextYear.getTime()) //
                 .inMode(CalendarPickerView.SelectionMode.SINGLE) //
-                .withSelectedDate(new Date());
+                .withSelectedDate(new Date())//
+                .withHighlightedDates(mHighlightedDates);
 
 
     }
