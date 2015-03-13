@@ -1,6 +1,7 @@
 package com.development.daedalus.gametime;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ public class IpManager {
 
     private UpdateDatabaseAsyncTaskCompleteListener listener;
 
+
     Context context;
 
     IpManager(Context context,UpdateDatabaseAsyncTaskCompleteListener listener){
@@ -49,6 +51,74 @@ public class IpManager {
         this.listener = listener;
         entities_db = new EntitiesDbHelper(context);
         events_db = new EventsDbHelper(context);
+    }
+
+    public void UpdateTableVersions(){
+        UpdateTableVersionsAsyncTask updateTableVersionsAsyncTask = new UpdateTableVersionsAsyncTask();
+        updateTableVersionsAsyncTask.execute();
+    }
+
+    private class UpdateTableVersionsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            List<NameValuePair> myNameValuePairList = new ArrayList<NameValuePair>();
+            myNameValuePairList.add(new BasicNameValuePair("username", "root"));
+            myNameValuePairList.add(new BasicNameValuePair("password", "password"));
+
+            String json = MakeServiceCall("http://10.0.0.5/GameTime_UpdateTables.php",GET, myNameValuePairList);
+
+            //Log.d("Response: "," "+ json);
+
+            if (json != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(json);
+                    if (jsonObj != null) {
+                        JSONArray Entries = jsonObj.getJSONArray("result");
+
+                        for (int i = 0; i < Entries.length(); i++) {
+                            JSONObject entryObj = (JSONObject) Entries.get(i);
+                            SharedPreferences sharedPref = context.getSharedPreferences("GNA_Preferences",Context.MODE_PRIVATE);
+                            SharedPreferences.Editor edit = sharedPref.edit();
+                            edit.putInt("entities",entryObj.getInt("entities"));
+                            edit.putInt("events",entryObj.getInt("events"));
+
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //
+            } else {
+                Log.e("JSON Data", "Didn't receive any data from server!");
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            SharedPreferences sharedPref = context.getSharedPreferences("GNA_Preferences",Context.MODE_PRIVATE);
+            if(sharedPref.getInt("entities",0)!=123){
+                UpdateEntitiesDatabase();
+            }
+            if(sharedPref.getInt("events",0)!=123){
+                UpdateEventsDatabase();
+            }
+
+        }
+
     }
 
     public void UpdateEntitiesDatabase(){

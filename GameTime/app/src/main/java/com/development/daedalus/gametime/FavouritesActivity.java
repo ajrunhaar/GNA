@@ -40,26 +40,20 @@ public class FavouritesActivity extends ActionBarActivity implements IpManager.U
         entityListAdapter = new EntityListViewAdapter(entityList,this);
         entityListView.setAdapter(entityListAdapter);
 
-        /*
-        Get the age/version of all tables.
-        */
-
-        /*
-        For each table out of date, clear and reload.
-        */
-
         entitiesDbHelper = new EntitiesDbHelper(this);
         eventsDbHelper = new EventsDbHelper(this);
 
-        entitiesDbHelper.ClearEntities();
-        eventsDbHelper.ClearEvents();
-
-        ipManager = new IpManager(this,this);
+        UpdateEntitiesDatabaseAsyncTaskComplete();
 
 
 
-        ipManager.UpdateEventsDatabase();
-        ipManager.UpdateEntitiesDatabase();
+        //entitiesDbHelper.ClearEntities();
+        //eventsDbHelper.ClearEvents();
+
+        //ipManager = new IpManager(this,this);
+
+        //ipManager.UpdateEventsDatabase();
+        //ipManager.UpdateEntitiesDatabase();
 
 
         entityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
